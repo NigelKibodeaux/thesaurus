@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <style>
+            span {
+                color: transparent;
+                text-shadow: 0 0 8px #000;
+                transition-property: color text-shadow;
+                transition-duration: 1s;
+            }
+            span.found {
+                color: red;
+                text-shadow: none;
+            }
+            span.shown {
+                color: #000;
+                text-shadow: none;
+            }
+        </style>
+        <script>
+            // const text = `Halloween or Hallowe'en (less commonly known as Allhalloween, All Hallows' Eve, or All Saints' Eve) is a celebration observed in many countries on 31 October, the eve of the Western Christian feast of All Hallows' Day. It begins the observance of Allhallowtide, the time in the liturgical year dedicated to remembering the dead, including saints (hallows), martyrs, and all the departed. One theory holds that many Halloween traditions were influenced by Celtic harvest festivals, particularly the Gaelic festival Samhain, which are believed to have pagan roots. Some go further and suggest that Samhain may have been Christianized as All Hallow's Day, along with its eve, by the early Church. Other academics believe Halloween began solely as a Christian holiday, being the vigil of All Hallow's Day. Celebrated in Ireland and Scotland for centuries, Irish and Scottish immigrants took many Halloween customs to North America in the 19th century, and then through American influence Halloween had spread to other countries by the late 20th and early 21st century. Popular Halloween activities include trick-or-treating (or the related guising and souling), attending Halloween costume parties, carving pumpkins or turnips into jack-o'-lanterns, lighting bonfires, apple bobbing, divination games, playing pranks, visiting haunted attractions, telling scary stories, and watching horror or Halloween-themed films. Some people practice the Christian religious observances of All Hallows' Eve, including attending church services and lighting candles on the graves of the dead, although it is a secular celebration for others. Some Christians historically abstained from meat on All Hallows' Eve, a tradition reflected in the eating of certain vegetarian foods on this vigil day, including apples, potato pancakes, and soul cakes.`
+            const text = `Superman was born on the fictional planet Krypton and was named Kal-El. As a baby, his parents sent him to Earth in a small spaceship moments before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside, near the fictional town of Smallville. He was found and adopted by farmers Jonathan and Martha Kent, who named him Clark Kent. Clark developed various superhuman abilities, such as incredible strength and impervious skin. His adoptive parents advised him to use his abilities for the benefit of humanity, and he decided to fight crime. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting crime. Clark resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois Lane, Daily Planet photographer Jimmy Olsen and editor-in-chief Perry White, and enemies such as Brainiac, Darkseid, General Zod, and his archenemy Lex Luthor.`
+            const commonWords = ['the','be','to','of','and','a','in','that','have','I','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us',]
+
+            const words = text.split(/\b/g)
+            const wrappedWords = words.map((word, index) => {
+                const isWord = /[a-z]/.test(word)
+                const isShown = !isWord || commonWords.includes(word) || Math.random() > 0.5
+                return `<span class="${isShown ? 'shown' : ''}">${word}</span>`
+            }).join(' ')
+
+            window.onload = () => {
+                console.log('hello')
+                document.getElementById('text').innerHTML = wrappedWords
+                document.getElementById('input').addEventListener('keyup', handleInput)
+            }
+
+            function handleInput({key}) {
+                if (key !== 'Enter') return
+
+                const input = document.getElementById('input')
+                const value = input.value
+                const spans = document.querySelectorAll('span:not(.found)')
+                for (span of spans) {
+                    if (span.innerText.toLowerCase() === value.toLowerCase()) {
+                        span.classList.add('found')
+                    }
+                }
+
+                input.value = ''
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="text"></div>
+        <input style="margin-top:100px" id="input"/>
+    </body>
+</html>
