@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <style>
+            span {
+                color: transparent;
+                text-shadow: 0 0 8px #000;
+            }
+            span.found {
+                color: #000;
+                text-shadow: none;
+            }
+        </style>
+        <script src="./word_list.js"></script>
+        <script>
+            const randomWord = wordList[Math.floor(Math.random() * wordList.length)]
+
+            window.onload = () => {
+                document.getElementById('text').innerHTML = randomWord.synonyms.join('<br/>')
+                document.getElementById('input').addEventListener('keyup', handleInput)
+                document.getElementById('input').focus()
+                document.getElementsByTagName('button')[0].addEventListener('click', () => alert(randomWord.word))
+            }
+
+            function handleInput({key}) {
+                if (key !== 'Enter') return
+
+                const input = document.getElementById('input')
+                const value = input.value
+
+                if (value.toLowerCase().trim() === randomWord.word) {
+                    alert('Correct!')
+                } else {
+                    document.getElementById('incorrects').appendChild(document.createElement('div')).innerText = value
+                    input.value = ''
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <h1>Synonyms</h1>
+        <div id="text"></div>
+
+        <h1>What word is it?</h1>
+        <input id="input"/>
+
+        <h1>Incorrect Guessess</h1>
+        <div id="incorrects"></div>
+
+        <button style="margin-top:100px">Give Up</button>
+    </body>
+</html>
