@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       #text span {
         color: transparent;
@@ -28,8 +29,9 @@
         text-shadow: none;
       }
       body {
-        width: 500px;
-        margin: 20px auto;
+        width: default;
+        margin: 0;
+        padding: 20px;
       }
       h1 {
         text-align: center;
@@ -77,6 +79,12 @@
         }
         #text span.shown {
           color: white;
+        }
+      }
+      @media only screen and (min-width: 560px) {
+        body {
+            width: 500px;
+            margin: 0 auto;
         }
       }
     </style>
