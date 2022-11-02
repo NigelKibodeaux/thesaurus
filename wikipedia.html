@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0,maximum-scale=1.0"
+    />
     <style>
       #text span {
         color: transparent;
@@ -31,15 +34,15 @@
       body {
         width: default;
         margin: 0;
-        padding: 20px;
+        padding: 0 20px;
       }
       h1 {
         text-align: center;
       }
       #input {
-        margin: 50px auto;
         display: block;
         padding: 10px;
+        margin: 10px auto;
       }
       .grid {
         display: grid;
@@ -83,8 +86,12 @@
       }
       @media only screen and (min-width: 560px) {
         body {
-            width: 500px;
-            margin: 0 auto;
+          width: 500px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        #input {
+          margin: 50px auto;
         }
       }
     </style>
@@ -93,7 +100,7 @@
         `Minecraft is a sandbox video game developed by Mojang Studios. The game was created by Markus "Notch" Persson in the Java programming language. Following several early private testing versions, it was first made public in May 2009 before being fully released in November 2011, with Notch stepping down and Jens "Jeb" Bergensten taking over development. Minecraft has since been ported to several other platforms and is the best-selling video game of all time, with over 238 million copies sold and nearly 140 million monthly active players as of 2021.`,
         `Superman was born on the fictional planet Krypton and was named Kal-El. As a baby, his parents sent him to Earth in a small spaceship moments before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside, near the fictional town of Smallville. He was found and adopted by farmers Jonathan and Martha Kent, who named him Clark Kent. Clark developed various superhuman abilities, such as incredible strength and impervious skin. His adoptive parents advised him to use his abilities for the benefit of humanity, and he decided to fight crime. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting crime. Clark resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois Lane, Daily Planet photographer Jimmy Olsen and editor-in-chief Perry White, and enemies such as Brainiac, Darkseid, General Zod, and his archenemy Lex Luthor.`,
         `Ween is an American rock band from New Hope, Pennsylvania, formed in 1984 by Aaron Freeman and Mickey Melchiondo, better known by their respective stage names, Gene and Dean Ween. Generally categorized as an alternative rock band, the band are known for their irreverent, highly eclectic catalog of songs inspired by funk, soul, country, gospel, prog, psychedelia, R&B, heavy metal, and punk rock.`,
-        `Austin Richard Post (born July 4, 1995), known professionally as Post Malone, is an American rapper, singer, songwriter, and record producer. Known for his variegated vocals, Malone has gained acclaim for blending genres and subgenres of hip hop, pop, R&B, and trap. His stage name was derived from inputting his birth name into a rap name generator.`
+        `Austin Richard Post (born July 4, 1995), known professionally as Post Malone, is an American rapper, singer, songwriter, and record producer. Known for his variegated vocals, Malone has gained acclaim for blending genres and subgenres of hip hop, pop, R&B, and trap. His stage name was derived from inputting his birth name into a rap name generator.`,
       ]
       const commonWords = [
         "the",
@@ -199,7 +206,11 @@
         "variegated",
       ]
 
-      const words = text[window.location.search.slice(1) || Math.floor(Math.random() * text.length)].split(/\b/g)
+      const words =
+        text[
+          window.location.search.slice(1) ||
+            Math.floor(Math.random() * text.length)
+        ].split(/\b/g)
       const wrappedWords = words
         .map((word, index) => {
           const isWord = /[a-z]/.test(word)
@@ -216,7 +227,7 @@
 
       function handleInput({ key }) {
         const input = document.getElementById("input")
-        const value = input.value
+        const value = input.value.trim()
         const spans = document.querySelectorAll("span:not(.found)")
 
         if (key !== "Enter") return
