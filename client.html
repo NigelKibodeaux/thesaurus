@@ -5,7 +5,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0,maximum-scale=1.0"
     />
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <style>
       #text span {
         color: transparent;
@@ -103,7 +103,9 @@
 
         console.log("creating new websocket")
         const protocol = location.protocol === "https:" ? "wss:" : "ws:"
-        const ws = new WebSocket(`${protocol}//${window.location.host}?player=${uuid}`)
+        const ws = new WebSocket(
+          `${protocol}//${window.location.host}?player=${uuid}`
+        )
 
         ws.onmessage = (event) => {
           console.log("Message from server ", event.data)
@@ -270,6 +272,8 @@
           })
         )
         handleGuess(value, handle)
+
+        input.value = ""
       }
 
       function handleGuess(value, handle) {
@@ -317,8 +321,6 @@
         } else {
           document.getElementById("text").className = "eight"
         }
-
-        input.value = ""
       }
     </script>
   </head>
