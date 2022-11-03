@@ -60,10 +60,6 @@
       #guesses .bomb.exploded::before {
         content: "💥";
       }
-      #badGuesses span {
-        font-size: 0.9em;
-        transform: rotate(45deg);
-      }
       @media (prefers-color-scheme: dark) {
         body {
           background-color: black;
@@ -94,9 +90,6 @@
         #input {
           margin: 50px auto;
         }
-        #badGuesses span {
-          transform: none;
-        }
       }
     </style>
     <script>
@@ -108,7 +101,8 @@
         if (webSocket?.OPEN) return webSocket
 
         console.log("creating new websocket")
-        const ws = new WebSocket(`ws://${window.location.host}?player=${uuid}`)
+        const protocol = location.protocol === "https:" ? "wss:" : "ws:"
+        const ws = new WebSocket(`${protocol}://${window.location.host}?player=${uuid}`)
 
         ws.onmessage = (event) => {
           console.log("Message from server ", event.data)
