@@ -39,29 +39,30 @@
       h1 {
         text-align: center;
       }
+      #handle {
+        display: block;
+        padding: 10px;
+        margin: 10px auto 0px auto;
+      }
       #input {
         display: block;
         padding: 10px;
         margin: 10px auto;
       }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(8, minmax(0, 1fr));
-      }
-      .grid span {
-        flex: 1;
-        text-align: center;
-      }
-      #bombs span {
+      #guesses .bomb {
         font-size: 2em;
         text-shadow: none;
         color: black;
       }
-      #bombs span::before {
-        content: "💣";
+      #guesses .bomb::before {
+        content: '💣';
       }
-      #bombs span.exploded::before {
-        content: "💥";
+      #guesses .bomb.exploded::before {
+        content: '💥';
+      }
+      #badGuesses span {
+        font-size: 0.9em;
+        transform: rotate(45deg);
       }
       @media (prefers-color-scheme: dark) {
         body {
@@ -93,9 +94,43 @@
         #input {
           margin: 50px auto;
         }
+        #badGuesses span {
+          transform: none;
+        }
       }
     </style>
     <script>
+      const uuid = crypto.randomUUID()
+      let webSocket
+      webSocket = getWebSocket()
+
+      function getWebSocket() {
+        if (webSocket?.OPEN) return webSocket
+
+        console.log('creating new websocket')
+        const ws = new WebSocket(`ws://localhost:8080?player=${uuid}`)
+
+        ws.onmessage = (event) => {
+          console.log("Message from server ", event.data)
+          const { guess, handle } = JSON.parse(event.data)
+          handleGuess(guess, handle)
+        }
+
+        ws.onopen = (event) => {
+          console.log("WebSocket is open now.")
+        }
+
+        ws.onclose = (event) => {
+          console.log("WebSocket is closed now.")
+          setTimeout(() => {
+            console.log("Reconnecting...")
+            webSocket = getWebSocket()
+          }, 500)
+        }
+
+        return ws
+      }
+
       const text = [
         `Minecraft is a sandbox video game developed by Mojang Studios. The game was created by Markus "Notch" Persson in the Java programming language. Following several early private testing versions, it was first made public in May 2009 before being fully released in November 2011, with Notch stepping down and Jens "Jeb" Bergensten taking over development. Minecraft has since been ported to several other platforms and is the best-selling video game of all time, with over 238 million copies sold and nearly 140 million monthly active players as of 2021.`,
         `Superman was born on the fictional planet Krypton and was named Kal-El. As a baby, his parents sent him to Earth in a small spaceship moments before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside, near the fictional town of Smallville. He was found and adopted by farmers Jonathan and Martha Kent, who named him Clark Kent. Clark developed various superhuman abilities, such as incredible strength and impervious skin. His adoptive parents advised him to use his abilities for the benefit of humanity, and he decided to fight crime. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting crime. Clark resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois Lane, Daily Planet photographer Jimmy Olsen and editor-in-chief Perry White, and enemies such as Brainiac, Darkseid, General Zod, and his archenemy Lex Luthor.`,
@@ -228,9 +263,22 @@
       function handleInput({ key }) {
         const input = document.getElementById("input")
         const value = input.value.trim()
-        const spans = document.querySelectorAll("span:not(.found)")
 
         if (key !== "Enter") return
+
+        const handle = document.getElementById("handle").value
+        getWebSocket().send(
+          JSON.stringify({
+            guess: value,
+            uuid,
+            handle,
+          })
+        )
+        handleGuess(value, handle)
+      }
+
+      function handleGuess(value, handle) {
+        const spans = document.querySelectorAll("span:not(.found):not(.shown)")
 
         let found = false
         for (span of spans) {
@@ -240,34 +288,33 @@
           }
         }
 
-        const explodedBombs = document.querySelectorAll("#bombs span.exploded")
+        const explodedBombs = document.querySelectorAll("#guesses .bomb.exploded")
 
         if (!found) {
-          const bomb =
-            document.querySelectorAll("#bombs span")[explodedBombs.length]
-          document.querySelectorAll("#badGuesses span")[
+          const bomb = document.querySelectorAll("#guesses .bomb")[explodedBombs.length]
+          document.querySelectorAll("#guesses .text")[
             explodedBombs.length
-          ].innerText = value
+          ].innerText = handle ? `${handle} guessed "${value}"` : value
           bomb.classList.add("exploded")
         } else {
           if (explodedBombs.length) {
             explodedBombs[explodedBombs.length - 1].classList.remove("exploded")
-            document.querySelectorAll("#badGuesses span")[
+            document.querySelectorAll("#guesses .text")[
               explodedBombs.length - 1
             ].innerText = ""
           }
         }
 
         const newExplodedBombs = document.querySelectorAll(
-          "#bombs span.exploded"
+          "#guesses .bomb.exploded"
         )
-        if (newExplodedBombs.length === 8) {
+        if (newExplodedBombs.length === 7) {
           document.getElementById("text").innerHTML = "You lose!"
-        } else if (newExplodedBombs.length === 7) {
-          document.getElementById("text").className = "five"
         } else if (newExplodedBombs.length === 6) {
-          document.getElementById("text").className = "six"
+          document.getElementById("text").className = "five"
         } else if (newExplodedBombs.length === 5) {
+          document.getElementById("text").className = "six"
+        } else if (newExplodedBombs.length === 4) {
           document.getElementById("text").className = "seven"
         } else {
           document.getElementById("text").className = "eight"
@@ -281,26 +328,16 @@
   <body>
     <h1>Fill in the Blanks</h1>
     <div id="text" class="eight"></div>
-    <input id="input" />
-    <div id="bombs" class="grid">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    <div id="badGuesses" class="grid">
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
-      <span></span>
+    <input id="handle" placeholder="Your Name Here" />
+    <input id="input" placeholder="Guess a word" />
+    <div id="guesses">
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div><span class="bomb"></span> <span class="text"></span></div>
     </div>
   </body>
 </html>
