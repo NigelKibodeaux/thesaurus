@@ -102,7 +102,7 @@
 
         console.log("creating new websocket")
         const protocol = location.protocol === "https:" ? "wss:" : "ws:"
-        const ws = new WebSocket(`${protocol}://${window.location.host}?player=${uuid}`)
+        const ws = new WebSocket(`${protocol}//${window.location.host}?player=${uuid}`)
 
         ws.onmessage = (event) => {
           console.log("Message from server ", event.data)
