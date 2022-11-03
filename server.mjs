@@ -2,9 +2,9 @@ import { WebSocketServer } from 'ws'
 import http from 'http'
 import fs from 'fs'
 
-const client = fs.readFileSync('client.html', 'utf8')
 
 const server = http.createServer((req, res) => {
+  const client = fs.readFileSync('client.html', 'utf8')
   res.write(client)
   res.end()
 })

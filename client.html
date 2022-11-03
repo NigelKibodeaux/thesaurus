@@ -55,10 +55,10 @@
         color: black;
       }
       #guesses .bomb::before {
-        content: '💣';
+        content: "💣";
       }
       #guesses .bomb.exploded::before {
-        content: '💥';
+        content: "💥";
       }
       #badGuesses span {
         font-size: 0.9em;
@@ -107,8 +107,8 @@
       function getWebSocket() {
         if (webSocket?.OPEN) return webSocket
 
-        console.log('creating new websocket')
-        const ws = new WebSocket(`ws://localhost:8080?player=${uuid}`)
+        console.log("creating new websocket")
+        const ws = new WebSocket(`ws://${window.location.host}?player=${uuid}`)
 
         ws.onmessage = (event) => {
           console.log("Message from server ", event.data)
@@ -288,10 +288,13 @@
           }
         }
 
-        const explodedBombs = document.querySelectorAll("#guesses .bomb.exploded")
+        const explodedBombs = document.querySelectorAll(
+          "#guesses .bomb.exploded"
+        )
 
         if (!found) {
-          const bomb = document.querySelectorAll("#guesses .bomb")[explodedBombs.length]
+          const bomb =
+            document.querySelectorAll("#guesses .bomb")[explodedBombs.length]
           document.querySelectorAll("#guesses .text")[
             explodedBombs.length
           ].innerText = handle ? `${handle} guessed "${value}"` : value
