@@ -51,15 +51,18 @@
         margin: 10px auto;
       }
       #guesses .bomb {
-        font-size: 2em;
         text-shadow: none;
         color: black;
       }
       #guesses .bomb::before {
         content: "💣";
+        font-size: 2em;
+        padding-right: 5px;
       }
       #guesses .bomb.exploded::before {
         content: "💥";
+        font-size: 2em;
+        padding-right: 5px;
       }
       @media (prefers-color-scheme: dark) {
         body {
@@ -99,7 +102,10 @@
       webSocket = getWebSocket()
 
       function getWebSocket() {
-        if (webSocket?.OPEN) return webSocket
+        if (webSocket && webSocket.readyState === webSocket.OPEN) {
+          console.log('returning existing websocket')
+          return webSocket
+        }
 
         console.log("creating new websocket")
         const protocol = location.protocol === "https:" ? "wss:" : "ws:"
@@ -130,7 +136,7 @@
 
       const text = [
         // `Minecraft is a sandbox video game developed by Mojang Studios. The game was created by Markus "Notch" Persson in the Java programming language. Following several early private testing versions, it was first made public in May 2009 before being fully released in November 2011, with Notch stepping down and Jens "Jeb" Bergensten taking over development. Minecraft has since been ported to several other platforms and is the best-selling video game of all time, with over 238 million copies sold and nearly 140 million monthly active players as of 2021.`,
-        `{Superman} was born on the fictional planet {Krypton} and was named Kal-El. As a {baby}, his parents sent him to {Earth} in a small spaceship moments before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside, near the fictional town of Smallville. He was found and adopted by farmers Jonathan and Martha {Kent}, who named him {Clark} Kent. {Clark} developed various superhuman abilities, such as incredible {strength} and impervious skin. His adoptive parents advised him to use his abilities for the benefit of humanity, and he decided to fight {crime}. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting {crime}. {Clark} resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois {Lane}, Daily Planet {photographer} Jimmy Olsen and editor-in-chief Perry White, and enemies such as Brainiac, Darkseid, General Zod, and his archenemy {Lex} Luthor.`,
+        // `{Superman} was born on the fictional planet {Krypton} and was named Kal-El. As a {baby}, his parents sent him to {Earth} in a small spaceship moments before Krypton was destroyed in a natural cataclysm. His ship landed in the American countryside, near the fictional town of Smallville. He was found and adopted by farmers Jonathan and Martha {Kent}, who named him {Clark} Kent. {Clark} developed various superhuman abilities, such as incredible {strength} and impervious skin. His adoptive parents advised him to use his abilities for the benefit of humanity, and he decided to fight {crime}. To protect his personal life, he changes into a colorful costume and uses the alias "Superman" when fighting {crime}. {Clark} resides in the fictional American city of Metropolis, where he works as a journalist for the Daily Planet. Superman's supporting characters include his love interest and fellow journalist Lois {Lane}, Daily Planet {photographer} Jimmy Olsen and editor-in-chief Perry White, and enemies such as Brainiac, Darkseid, General Zod, and his archenemy {Lex} Luthor.`,
         // `Ween is an American rock band from New Hope, Pennsylvania, formed in 1984 by Aaron Freeman and Mickey Melchiondo, better known by their respective stage names, Gene and Dean Ween. Generally categorized as an alternative rock band, the band are known for their irreverent, highly eclectic catalog of songs inspired by funk, soul, country, gospel, prog, psychedelia, R&B, heavy metal, and punk rock.`,
         `Austin Richard {Post} (born {July} 4, 1995), known professionally as {Post} Malone, is an American {rapper}, singer, songwriter, and record {producer}. Known for his variegated vocals, Malone has gained acclaim for blending genres and subgenres of hip hop, {pop}, R&B, and trap. His stage {name} was derived from inputting his birth {name} into a rap {name} generator.`,
       ]
@@ -188,12 +194,12 @@
       }
 
       function handleGuess(value, handle) {
-        const spans = document.querySelectorAll("span:not(.found):not(.shown)")
+        const spans = document.querySelectorAll("span.hidden")
 
         let found = false
         for (span of spans) {
           if (span.innerText.toLowerCase() === value.toLowerCase()) {
-            span.classList.add("found")
+            span.className = "found"
             found = true
           }
         }
@@ -205,16 +211,12 @@
         if (!found) {
           const bomb =
             document.querySelectorAll("#guesses .bomb")[explodedBombs.length]
-          document.querySelectorAll("#guesses .text")[
-            explodedBombs.length
-          ].innerText = handle ? `${handle} guessed "${value}"` : value
+          bomb.innerText = handle ? `${handle} guessed "${value}"` : value
           bomb.classList.add("exploded")
         } else {
-          if (explodedBombs.length) {
-            explodedBombs[explodedBombs.length - 1].classList.remove("exploded")
-            document.querySelectorAll("#guesses .text")[
-              explodedBombs.length - 1
-            ].innerText = ""
+          // handle a win
+          if (spans.length === 1) {
+            alert('You win!')
           }
         }
 
@@ -222,7 +224,7 @@
           "#guesses .bomb.exploded"
         )
         if (newExplodedBombs.length === 7) {
-          document.getElementById("text").innerHTML = "You lose!"
+          alert('You lose!')
         } else if (newExplodedBombs.length === 6) {
           document.getElementById("text").className = "five"
         } else if (newExplodedBombs.length === 5) {
@@ -242,13 +244,13 @@
     <input id="handle" placeholder="Your Name Here" />
     <input id="input" placeholder="Guess a word" />
     <div id="guesses">
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
-      <div><span class="bomb"></span> <span class="text"></span></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
+      <div class="bomb"></div>
     </div>
   </body>
 </html>
